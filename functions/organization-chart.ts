@@ -60,6 +60,9 @@ function parseOrganizationCsvData(csv: string): IRawOrganizationData {
   // Assume row delimitters are "\n"
   const rows = csv.split("\n");
 
+  // Skip headers
+  rows.shift();
+
   rawOrgData.organizationData = rows.map((r) => {
     // Assume csv uses comma-separated delimitters.=
     const cols = r.split(",");
