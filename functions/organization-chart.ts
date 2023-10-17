@@ -27,7 +27,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   );
   const orgJson: OrganizationData = JSON.parse(response);
   const orgData: Employee[] = orgJson.organizationData;
-  const orderedOrgData = _.orderBy(orgData, ["department", "isManager"]);
+  const orderedOrgData = _.orderBy(orgData, ["department", "isManager"], ["asc", "desc"]);
 
   const headers = new Headers();
   headers.set("Content-Type", "application/json;charset=utf-8");
