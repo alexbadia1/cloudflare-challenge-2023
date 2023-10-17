@@ -11,7 +11,6 @@ const ME = {
 };
 
 export const onRequest: PagesFunction<Env> = async (context) => {
-  // const value = await context.env.KV.get('example');
   const headers = new Headers();
   headers.set("Content-Type", "application/json;charset=utf-8");
   return new Response(
