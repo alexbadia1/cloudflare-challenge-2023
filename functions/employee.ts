@@ -46,7 +46,7 @@ function filterBy(employees: IRawEmployee[], query: IQuery): IQueryResult {
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   // Get query from body
-  const query = await context.request.body.getReader().read();
+  const query = await context.request.json();
 
   const headers = new Headers();
   return new Response(
