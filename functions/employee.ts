@@ -37,43 +37,41 @@ function filterBy(employees: IRawEmployee[], query: IQuery): IQueryResult {
     employees: [] as IRawEmployee[],
   };
 
-  queryResult.employees.concat(
-    employees.filter((employee: IRawEmployee) => {
-      if (query?.name && employee.name.match(query.name) === null) {
-        return false;
-      }
+  queryResult.employees = employees.filter((employee: IRawEmployee) => {
+    if (query?.name && employee.name.match(query.name) === null) {
+      return false;
+    }
 
-      if (
-        query?.department &&
-        employee.department.match(query.department) === null
-      ) {
-        return false;
-      }
+    if (
+      query?.department &&
+      employee.department.match(query.department) === null
+    ) {
+      return false;
+    }
 
-      if (query?.minSalary && employee.salary < query.minSalary) {
-        return false;
-      }
+    if (query?.minSalary && employee.salary < query.minSalary) {
+      return false;
+    }
 
-      if (query?.maxSalary && employee.salary > query.maxSalary) {
-        return false;
-      }
+    if (query?.maxSalary && employee.salary > query.maxSalary) {
+      return false;
+    }
 
-      if (query?.office && employee.office.match(query.office) === null) {
-        return false;
-      }
+    if (query?.office && employee.office.match(query.office) === null) {
+      return false;
+    }
 
-      if (
-        query?.skill &&
-        employee.skill1.match(query.skill) === null &&
-        employee.skill2.match(query.skill) === null &&
-        employee.skill3.match(query.skill) === null
-      ) {
-        return false;
-      }
+    if (
+      query?.skill &&
+      employee.skill1.match(query.skill) === null &&
+      employee.skill2.match(query.skill) === null &&
+      employee.skill3.match(query.skill) === null
+    ) {
+      return false;
+    }
 
-      return true;
-    })
-  );
+    return true;
+  });
 
   return queryResult;
 }
