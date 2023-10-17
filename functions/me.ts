@@ -1,6 +1,6 @@
 const ME = {
   name: "Alex Badia",
-  homepage: "https://4a2c4e9e.cloudflare-frontend-dw6.pages.dev",
+  homepage: "",
   githubURL: "https://github.com/alexbadia1/cloudflare-front-end",
   interestingFact: "",
   skills: ["Backend Development", "Cybersecurity", "Distributed Systems", "Java", "Python", "TypeScript"],

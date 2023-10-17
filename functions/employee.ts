@@ -30,14 +30,18 @@ interface IQueryResult {
   employees: IRawEmployee[];
 }
 
+// Worker-Page KV key for organization data
 const KV_ORGANIZATION_DATA_KEY = "organizationData";
 
-function filterBy(employees: IRawEmployee[], query: IQuery): IQueryResult {
-  const queryResult: IQueryResult = {
-    employees: [] as IRawEmployee[],
-  };
-
-  queryResult.employees = employees.filter((employee: IRawEmployee) => {
+/**
+ * Filters a list of employees based on the provided query {@link IQuery}.
+ *
+ * @param {IRawEmployee[]} employees - list of employees to query
+ * @param {IQuery} query - query with rgex criteria
+ * @returns {IRawEmployee[]} - list of employees that match query
+ */
+function filterBy(employees: IRawEmployee[], query: IQuery): IRawEmployee[] {
+  return employees.filter((employee: IRawEmployee) => {
     if (query?.name && employee.name.match(query.name) === null) {
       return false;
     }
@@ -70,29 +74,29 @@ function filterBy(employees: IRawEmployee[], query: IQuery): IQueryResult {
       return false;
     }
 
+    // Must match ALL fields present in query
     return true;
   });
-
-  return queryResult;
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
-  // Get query from body
   const query: IQuery = await context.request.json();
 
-  // Get organization data
-  const response = await context.env.CLOUDFLARE_ORG.get(
-    KV_ORGANIZATION_DATA_KEY
-  );
-  const orgJson: IRawOrganizationData = JSON.parse(response);
+  // Entire organization data is stored as one key value pair to avoid limits during AutoGrade.
+  //
+  // If there were no read limit, each employee could be a key value entry. However, queries would
+  // be super inefficient. There must be an elasti-cache equivalent product by Cloudflare?
+  const data = await context.env.CLOUDFLARE_ORG.get(KV_ORGANIZATION_DATA_KEY);
+  const orgJson: IRawOrganizationData = JSON.parse(data);
+  const result: IRawEmployee[] = filterBy(orgJson.organizationData, query);
 
-  // Apply query
-  const result: IQueryResult = filterBy(orgJson.organizationData, query);
+  const response: IQueryResult = {
+    employees: result,
+  };
 
-  // Return results
   const headers = new Headers();
   headers.set("Content-Type", "application/json;charset=utf-8");
-  return new Response(JSON.stringify(result), {
+  return new Response(JSON.stringify(response), {
     status: 200,
     headers: headers,
   } as ResponseInit);
