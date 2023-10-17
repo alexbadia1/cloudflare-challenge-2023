@@ -1,5 +1,3 @@
-import * as _ from "lodash";
-
 interface Env {
   CLOUDFLARE_ORG: KVNamespace;
 }
@@ -80,15 +78,15 @@ function generateOrganizationChart(orgData: IRawEmployee[]): IOrganizationChart 
       currentDepartment.managerName = employee.name;
     }
   });
-  
-  cache.forEach((departmentObj, departmentName) => {
+
+  cache.forEach((departmentObj, _) => {
     organizationChart.organization.departments.push(departmentObj);
   });
 
   return organizationChart;
 }
 
-export const onRequest: PagesFunction<Env> = async (context) => {
+export const onRequestGet: PagesFunction<Env> = async (context) => {
   const response = await context.env.CLOUDFLARE_ORG.get(
     KV_ORGANIZATION_DATA_KEY
   );

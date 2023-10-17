@@ -1,7 +1,3 @@
-interface Env {
-  KV: KVNamespace;
-}
-
 const ME = {
   name: "Alex Badia",
   homepage: "https://4a2c4e9e.cloudflare-frontend-dw6.pages.dev",
@@ -10,7 +6,7 @@ const ME = {
   skills: ["Weightlifting", "Chess", "Piano"],
 };
 
-export const onRequest: PagesFunction<Env> = async (context) => {
+export const onRequestGet: PagesFunction = async (context) => {
   const headers = new Headers();
   headers.set("Content-Type", "application/json;charset=utf-8");
   return new Response(
