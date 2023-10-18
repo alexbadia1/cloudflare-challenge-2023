@@ -3,15 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
     "@unicef/react-org-chart": "^0.3.4",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.17.0",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "react": "^16.12.0",
+    "react-d3": "^0.4.0",
+    "react-dom": "^16.12.0",
+    "react-loader-spinner": "^5.4.5",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "^3.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -20,10 +18,7 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "extends": "react-app"
   },
   "browserslist": {
     "production": [
@@ -39,7 +34,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20231016.0",
-    "typescript": "^5.2.2",
+    "typescript": "^3.2.1",
     "wrangler": "^3.13.1"
   }
 }

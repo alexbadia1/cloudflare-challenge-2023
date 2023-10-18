@@ -1,0 +1,55 @@
+.legend {
+  position: fixed;
+  top: 0%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items:  center;
+  background-color: white;
+  border: 1px solid #374ea2;
+  text-align: left;
+  width: 40rem;
+}
+
+.legend:hover {
+  cursor: text;
+}
+
+.legend--text {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items:  flex-start;
+  text-align: left;
+}
+
+.legend--button {
+  outline: none;
+  border: none;
+  padding: 4px 24px;
+}
+
+.legend--button:hover {
+  cursor: pointer;
+}
+
+.legend--button:active {
+  fill: white;
+  background-color: #374ea2;
+}
+
+.invisible {
+  display: none;
+}
+
+.closed {
+  height: 3rem;
+
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+  transition: transform .250s ease-in-out;
+}
