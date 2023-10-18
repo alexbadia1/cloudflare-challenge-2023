@@ -26,6 +26,9 @@ const Toolbar = () => {
           <li>
             "GitHub" link, is the link to the source code for this challenge
           </li>
+          <li>
+            Use the below arrow to collapse this "Tips" bar.
+          </li>
         </ul>
       </div>
       <button className="legend--button" onClick={(_) => setIsOpen(!isOpen)}>
