@@ -112,7 +112,7 @@ export default class App extends React.Component {
     // Timeout for dramatic effect
     setTimeout(() => {
       fetch(
-        "https://ae00a697.cloudflare-frontend-dw6.pages.dev/organization-chart"
+        "/organization-chart"
       )
         .then((response) => {
           if (!response.ok) {
