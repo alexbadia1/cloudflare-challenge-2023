@@ -8,7 +8,7 @@ interface MeResponse {
 
 const ME_RESPONSE: MeResponse = {
   name: "Alex Badia",
-  homepage: "",
+  homepage: "https://cloudflare-9h5.pages.dev/",
   githubURL: "https://github.com/alexbadia1/cloudflare-front-end",
   interestingFact: "",
   skills: [
