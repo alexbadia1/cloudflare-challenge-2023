@@ -191,6 +191,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   const headers = new Headers();
   headers.set("Content-Type", "application/json;charset=utf-8");
+  headers.set('Access-Control-Allow-Origin', '*');
   return new Response(JSON.stringify(orgChart), {
     status: 200,
     headers: headers,
@@ -265,7 +266,7 @@ export const onRequestPost: PagesFunction = async (context) => {
 
   const headers = new Headers();
   headers.set("Content-Type", "application/json;charset=utf-8");
-
+  headers.set('Access-Control-Allow-Origin', '*');
   return new Response(JSON.stringify(orgChart), {
     status: 200,
     headers: headers,
