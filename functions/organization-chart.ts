@@ -101,7 +101,6 @@ function createOrgChart(employees: IRawEmployee[]): IOrganizationChart {
 
   // Sort employee's by department
   employees.forEach((employee: IRawEmployee) => {
-
     // Department names are case-sensitive
     if (!cache.has(employee.department)) {
       cache.set(employee.department, {

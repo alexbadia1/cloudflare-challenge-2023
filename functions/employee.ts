@@ -35,7 +35,7 @@ const KV_ORGANIZATION_DATA_KEY = "organizationData";
 
 /**
  * Filters a list of employees based on the provided query {@link IQuery}.
- * 
+ *
  * Note: An empty query will returnn all employees.
  *
  * @param {IRawEmployee[]} employees - list of employees to query
