@@ -57,8 +57,8 @@ function parseOrganizationCsvData(csv: string): IRawOrganizationData {
     organizationData: [] as IRawEmployee[],
   };
 
-  // Assume row delimitters are "\n"
-  const rows = csv.split("\n");
+  // Assume row delimitters are "\n" and remove last \n.
+  const rows = csv.trimEnd().split("\n");
 
   // Skip headers
   rows.shift();
@@ -67,7 +67,7 @@ function parseOrganizationCsvData(csv: string): IRawOrganizationData {
     // Assume csv uses comma-separated delimitters.=
     const cols = r.split(",");
 
-    // Assume that the csv formatted containing only boolean, integer, and string values.=
+    // Assume that the csv formatted containing only boolean, integer, and string values.
     return {
       name: cols[0],
       department: cols[1],
