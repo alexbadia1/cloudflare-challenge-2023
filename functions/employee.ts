@@ -35,6 +35,8 @@ const KV_ORGANIZATION_DATA_KEY = "organizationData";
 
 /**
  * Filters a list of employees based on the provided query {@link IQuery}.
+ * 
+ * Note: An empty query will returnn all employees.
  *
  * @param {IRawEmployee[]} employees - list of employees to query
  * @param {IQuery} query - query with rgex criteria
@@ -79,13 +81,39 @@ function filterBy(employees: IRawEmployee[], query: IQuery): IRawEmployee[] {
   });
 }
 
+/**
+ * This endpoint serves as a way to display the information about an employee.
+ * Receives a json query in the body of the request and returns a list of all
+ * employees matching that criteria from the organization stored in Workers KV.
+ *
+ * For example, the following Request payload:
+ *   {
+ *     "name": "Alex",
+ *     "department": "Accounting"
+ *   }
+ *
+ * Yields the following Response payload:
+ *
+ *   {
+ *     "employees": [
+ *       {
+ *         "name": "Alexandria Booth",
+ *         "department": "Accounting",
+ *         "salary": 156,
+ *         "office": "New York",
+ *         "isManager": false,
+ *         "skill1": "Distributed Systems",
+ *         "skill2": "C++",
+ *         "skill3": "AI"
+ *       }
+ *     ]
+ *   }
+ *
+ * @param {EventContext} context
+ * @returns {IQueryResult}
+ */
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const query: IQuery = await context.request.json();
-
-  // Entire organization data is stored as one key value pair to avoid limits during AutoGrade.
-  //
-  // If there were no read limit, each employee could be a key value entry. However, queries would
-  // be super inefficient. There must be an elasti-cache equivalent product by Cloudflare?
   const data = await context.env.CLOUDFLARE_ORG.get(KV_ORGANIZATION_DATA_KEY);
   const orgJson: IRawOrganizationData = JSON.parse(data);
   const result: IRawEmployee[] = filterBy(orgJson.organizationData, query);
