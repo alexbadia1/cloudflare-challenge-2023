@@ -73,7 +73,7 @@ function parseOrganizationCsvData(csv: string): IRawOrganizationData {
       department: cols[1],
       salary: parseInt(cols[2], 10),
       office: cols[3],
-      isManager: JSON.parse(cols[4]),
+      isManager: JSON.parse(cols[4].toLowerCase()),
       skill1: cols[5],
       skill2: cols[6],
       skill3: cols[7],
