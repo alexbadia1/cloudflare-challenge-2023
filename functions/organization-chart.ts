@@ -52,7 +52,7 @@ const KV_ORGANIZATION_DATA_KEY = "organizationData";
  * @param {string} csv - The CSV contents to be parsed
  * @returns {IRawOrganizationData} - The parsed organization data
  */
-function parseOrganizationCsvData(csv: string): IRawOrganizationData {
+function parseCsvData(csv: string): IRawOrganizationData {
   const rawOrgData: IRawOrganizationData = {
     organizationData: [] as IRawEmployee[],
   };
@@ -86,20 +86,24 @@ function parseOrganizationCsvData(csv: string): IRawOrganizationData {
 /**
  * Creates an organization chart from a list of employees.
  *
- * @param {string} data - list of employees
- * @returns {IOrganizationChart} - organization chart
+ * @param {IRawEmployee[]} employees - list of employees
+ * @returns {IOrganizationChart} - Organization Chart
  */
-function createOrgChart(data: IRawEmployee[]): IOrganizationChart {
+function createOrgChart(employees: IRawEmployee[]): IOrganizationChart {
   const organizationChart: IOrganizationChart = {
     organization: {
       departments: [] as IOrganizationChartDepartment[],
     },
   };
 
+  // Keep track of unique departments
   const cache = new Map<string, IOrganizationChartDepartment>();
-  data.forEach((employee: IRawEmployee) => {
+
+  // Sort employee's by department
+  employees.forEach((employee: IRawEmployee) => {
+
+    // Department names are case-sensitive
     if (!cache.has(employee.department)) {
-      // Department names are case-sensitive
       cache.set(employee.department, {
         name: employee.department,
         employees: [] as IOrganizationChartEmployee[],
@@ -108,18 +112,19 @@ function createOrgChart(data: IRawEmployee[]): IOrganizationChart {
 
     const currentDepartment = cache.get(employee.department);
 
-    // Convert skills to an array for organization chart
+    // Add employee to their respective department
     currentDepartment.employees.push({
       name: employee.name,
       department: employee.department,
       salary: employee.salary,
       office: employee.office,
       isManager: employee.isManager,
+      // Convert skills to an array for organization chart
       skills: [employee.skill1, employee.skill2, employee.skill3],
     } as IOrganizationChartEmployee);
 
+    // Assumes only 1 manager per department
     if (employee.isManager) {
-      // Assume there is only 1 manager per department
       currentDepartment.managerName = employee.name;
     }
   });
@@ -131,38 +136,138 @@ function createOrgChart(data: IRawEmployee[]): IOrganizationChart {
   return organizationChart;
 }
 
+/**
+ * When the frontend queries the /organization-chart endpoint, it should
+ * receive a JSON response with a graph representation of the organization.
+ *
+ * The response you receive should be in this format
+ * (see {@link IOrganizationChart}):
+ *   {
+ *     "organization" : {
+ *       "departments": [<Department>, <Department>]
+ *     }
+ *   }
+ *
+ * Departments is a list of Department objects in this form
+ * (see {@link IOrganizationChartDepartment}):
+ *   {
+ *     "name" : <string>,
+ *     "managerName", <string>,
+ *     "employees": [<Employee>, <Employee>]
+ *   }
+ *
+ * And Employees is a list of Employee objects in this form
+ * (see {@link IOrganizationChartEmployee}):
+ *   {
+ *     "name" : <string>,
+ *     "department": <string>,
+ *     "salary": <int>,
+ *     "office": <string>,
+ *     "isManager": <boolean>,
+ *     "skills": [<string>, <string>, ...]
+ *   }
+ *
+ * Note: To minimize risk of API limit throttling, the organization data is
+ *       stored as 1 key-value pair in the Workers KV Namespace.
+ *
+ *       If there were no read limit, each employee could be a key-value entry
+ *       in the Workers KV Namespace. This would make writes and deletes very
+ *       simple. However, every time an organization chart is generated, or an
+ *       employee is queried for, there would be many reads.
+ *
+ *       In terms of scalability, I don't think the Workers KV Namespace is
+ *       the best implementation for the organization chart feature. Perhaps
+ *       Cloudflare offers an elasticache like product which might be overkill.
+ *
+ * @param {EventContext} context
+ * @returns {Response} Organization Chart
+ */
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const response = await context.env.CLOUDFLARE_ORG.get(
     KV_ORGANIZATION_DATA_KEY
   );
 
-  // Entire organization data is stored as one key value pair to avoid limits during AutoGrade.
-  //
-  // If there were no read limit, each employee could be a key value entry. However, doing so would
-  // lead to many reads each time an organization chart is generated or queried making scalability a concern.
-  // Perhaps a key-value store isn't the best solution for this.
   const orgJson: IRawOrganizationData = JSON.parse(response);
-  const organizationChart = createOrgChart(orgJson.organizationData);
+  const orgChart: IOrganizationChart = createOrgChart(orgJson.organizationData);
 
   const headers = new Headers();
   headers.set("Content-Type", "application/json;charset=utf-8");
-  return new Response(JSON.stringify(organizationChart), {
+  return new Response(JSON.stringify(orgChart), {
     status: 200,
     headers: headers,
   } as ResponseInit);
 };
 
+/**
+ * When the autograder posts data to the /organization-chart endpoint, it
+ * should receive a JSON response with a graph representation of the
+ * organization.
+ *
+ * The request's format is assumed to be:
+ *    {
+ *      "organizationData": <string representation of a csv>
+ *    }
+ *
+ * For example, the following Request payload:
+ *   {
+ *     "organizationData": "name,department,salary,office,isManager,skill1,
+ *       skill2,skill3\nJill,Developer Platform,100,Austin,FALSE,Typescript,
+ *       C++,GoLang\nBelen Norman,Developer Platform,252,London,TRUE,HTML,
+ *       Rust,GoLang\n"
+ *   }
+ *
+ * Yields the following Response payload:
+ *
+ * {
+ *   "organization": {
+ *     "departments": [
+ *       {
+ *         "name": "Developer Platform",
+ *         "managerName": "Belen Norman",
+ *         "employees": [
+ *           {
+ *             "name": "Jill",
+ *             "department": "Developer Platform",
+ *             "salary": 100,
+ *             "office": "Austin",
+ *             "isManager": false,
+ *             "skills": [
+ *               "Typescript",
+ *               "C++",
+ *               "GoLang"
+ *             ]
+ *           },
+ *           {
+ *             "name": "Belen Norman",
+ *             "department": "Developer Platform",
+ *             "salary": 252,
+ *             "office": "London",
+ *             "isManager": true,
+ *             "skills": [
+ *               "HTML",
+ *               "Rust",
+ *               "GoLang"
+ *             ]
+ *           }
+ *         ],
+ *       },
+ *     ]
+ *   }
+ * }
+ *
+ * @param {EventContext} context
+ * @returns {Response} Organization Chart
+ */
 export const onRequestPost: PagesFunction = async (context) => {
   const request: IOrganizationChartPostRequest = await context.request.json();
-  const orgJson: IRawOrganizationData = parseOrganizationCsvData(
-    request.organizationData
-  );
-  const organizationChart = createOrgChart(orgJson.organizationData);
 
-  // Respond with organization chart
+  const orgJson: IRawOrganizationData = parseCsvData(request.organizationData);
+  const orgChart: IOrganizationChart = createOrgChart(orgJson.organizationData);
+
   const headers = new Headers();
   headers.set("Content-Type", "application/json;charset=utf-8");
-  return new Response(JSON.stringify(organizationChart), {
+
+  return new Response(JSON.stringify(orgChart), {
     status: 200,
     headers: headers,
   } as ResponseInit);
