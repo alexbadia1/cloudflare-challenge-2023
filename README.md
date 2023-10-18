@@ -1,70 +1,49 @@
-# Getting Started with Create React App
+# Cloudflare Challenge
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Link to Cloudflare Page: https://cloudflare-9h5.pages.dev/
 
-## Available Scripts
+This is a simple React Application with a Cloudflare Page Functions. The React application uses @unicef/react-org-chart
+to visually represent the Organization Data from the challenge, while the functions implement the API's.
 
-In the project directory, you can run:
 
-### `npm start`
+## Reflection
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+This is a relatively small project, so there's not much to say. As I was working, I couldn't help but compare 
+Cloudflare to AWS, Workers and functions to things like AWS Lambdas. While at a super abstract level there are
+some similarities, I soon learned that they are more different then similar.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Moreover, For the challenge, there were 3 maindesign decisions I had reconciled.
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 1. Worker-KV for Organization Data
 
-### `npm run build`
+Inituitively, I wanted to add a key-value pair per record from the provided organization data csv.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The benefit is that inserts, writes, and updates are relatively straigh forwards. However, creating an organizational
+chart would require many reads. At least O(n) reads if, say, a GUI stored the entire organziation in the browser.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Since I'm on the free tier, and I don't know how the autograder works, nor how many reads I'd burn through testing,
+I decided to store the organization data as a single key value pair.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+### 2. How to implement the OrgChart
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+The question here was whether or not to read the entire Organization Data into the browser or not. Since I'm on the
+free tier I decided to read all the data into the browser and transform it to work with the @unicef/react-org-chart
+library.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+However, I did test an implementation where I asynchronously fetch employees as the user expands a node. This is alot
+more efficient on the browser, but comes at a cost of greater reads. However, I do believe this latter approach is
+superior. Depending on how big an organization is, what kind of data is stored per employee and existing API's, the 
+data could realistically become too much for some old computers.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+This is opposed to my previous experience at Numerix, where I had to create expandable tables to handle millions financial instruments.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
+### 3. Page Functions or Worker
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+I thought they were different, but really Pages Functions "are" Workers with their handlers having different names (i.e. onRequest vs fetch).
+The Page Functions also have the file-system based routing like Next.js.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+The Page Function provides some nice quality of life benefits. Mainly, I can keep the function with my front-end and have those functions piggyback
+on the hosted builds, rollbacks and more.
