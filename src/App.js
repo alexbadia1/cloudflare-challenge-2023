@@ -109,24 +109,19 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    // Timeout for dramatic effect
-    setTimeout(() => {
-      fetch(
-        "/organization-chart"
-      )
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          this.setState({ tree: createTree(data) });
-        })
-        .catch((error) => {
-          this.setState({ error });
-        });
-    }, 1000);
+    fetch("/organization-chart")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        this.setState({ tree: createTree(data) });
+      })
+      .catch((error) => {
+        this.setState({ error });
+      });
   }
 
   handleDownload = () => {
