@@ -14,10 +14,7 @@ const ME_RESPONSE: MeResponse = {
   skills: [
     "Backend Development",
     "Cybersecurity",
-    "Distributed Systems",
-    "Java",
-    "Python",
-    "TypeScript",
+    "Distributed Systems"
   ],
 };
 
