@@ -1,6 +1,6 @@
 interface MeResponse {
   name: string;
-  homePage: string;
+  homepage: string;
   githubURL: string;
   interestingFact: string;
   skills: string[];
@@ -8,9 +8,9 @@ interface MeResponse {
 
 const ME_RESPONSE: MeResponse = {
   name: "Alex Badia",
-  homePage: "https://cloudflare-9h5.pages.dev/",
+  homepage: "https://cloudflare-9h5.pages.dev/",
   githubURL: "https://github.com/alexbadia1/cloudflare-front-end",
-  interestingFact: "",
+  interestingFact: "A Quiet Place was filmed in my hometown (Pawling, NY)",
   skills: [
     "Backend Development",
     "Cybersecurity",
