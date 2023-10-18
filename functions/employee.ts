@@ -124,6 +124,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const headers = new Headers();
   headers.set("Content-Type", "application/json;charset=utf-8");
+  headers.set('Access-Control-Allow-Origin', '*');
   return new Response(JSON.stringify(response), {
     status: 200,
     headers: headers,
