@@ -64,7 +64,7 @@ function parseOrganizationCsvData(csv: string): IRawOrganizationData {
   rows.shift();
 
   rawOrgData.organizationData = rows.map((r) => {
-    // Assume csv uses comma-separated delimitters.=
+    // Assume csv uses comma-separated delimitters.
     const cols = r.split(",");
 
     // Assume that the csv formatted containing only boolean, integer, and string values.
